@@ -270,4 +270,3 @@ mode_nuit:
   - data:
       name: clear-dark
     service: frontend.set_theme
-.
