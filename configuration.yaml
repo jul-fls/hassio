@@ -1,0 +1,240 @@
+default_config:
+http:
+  base_url: !secret base_url 
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+api:
+
+ssdp:
+
+frontend:
+  themes: !include_dir_merge_named themes
+
+homeassistant:
+  time_zone: Europe/Paris
+  customize: !include customize.yaml
+
+#Includes
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+notify:
+  - platform: html5
+    name: HTML5_notifier
+    vapid_pub_key: !secret vapid_public_key
+    vapid_prv_key: !secret vapid_private_key
+    vapid_email: !secret vapid_email
+
+tts:
+  - platform: google_translate
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+    base_url: !secret tts_base_url 
+    service_name: google_say
+
+shopping_list:
+
+samsungtv:
+  - host: 192.168.1.22
+    name: tv_salon
+
+rest_command:
+  pc_button_on:
+    url: 'http://192.168.1.99/pc_on.php'
+    timeout: '300'
+  pc_button_off:
+    url: 'http://192.168.1.99/pc_off.php'
+    timeout: '300'
+  pc_button_toggle:
+    url: 'http://192.168.1.99/pc_toggle.php'
+    timeout: '300'
+  3d_printer_on:
+    url: 'http://192.168.1.99/3d_printer_on.php'
+    timeout: '300'
+  3d_printer_off:
+    url: 'http://192.168.1.99/3d_printer_off.php'
+    timeout: '300'
+  3d_printer_toggle:
+    url: 'http://192.168.1.99/3d_printer_toggle.php'
+    timeout: '300'
+  3d_printer_light_on:
+    url: 'http://192.168.1.88/capture?light=on'
+    timeout: '300'
+  3d_printer_light_off:
+    url: 'http://192.168.1.88/capture?light=off'
+    timeout: '300'
+  pin_7_on:
+    url: 'http://192.168.1.99/pin_7_on.php'
+    timeout: '300'
+  pin_7_off:
+    url: 'http://192.168.1.99/pin_7_off.php'
+    timeout: '300'
+  pin_7_toggle:
+    url: 'http://192.168.1.99/pin_7_toggle.php'
+    timeout: '300'
+  pin_21_on:
+    url: 'http://192.168.1.99/pin_21_on.php'
+    timeout: '300'
+  pin_21_off:
+    url: 'http://192.168.1.99/pin_21_off.php'
+    timeout: '300'
+  pin_21_toggle:
+    url: 'http://192.168.1.99/pin_21_toggle.php'
+    timeout: '300'
+#############################################################
+
+speedtestdotnet:
+  scan_interval:
+    minutes: 1
+  monitored_conditions:
+    - ping
+    - download
+    - upload
+
+weather:
+  - platform: darksky
+    api_key: !secret dark_sky_api_key
+    mode: daily
+
+sensor:
+  - platform: darksky
+    api_key: !secret dark_sky_api_key
+    forecast:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+    monitored_conditions:
+      - icon
+      - summary
+      - humidity
+      - dew_point
+      - cloud_cover
+      - temperature
+      - temperature_high
+      - temperature_low
+      - apparent_temperature
+      - apparent_temperature_high
+      - apparent_temperature_low
+      - wind_speed
+      - wind_gust
+      - wind_bearing
+      - precip_type
+      - precip_probability
+      - precip_accumulation
+      - precip_intensity
+      - precip_intensity_max
+      - uv_index
+      - daily_summary
+      - pressure
+      - ozone
+      - visibility
+      - moon_phase
+      - sunrise_time
+      - sunset_time
+      - alerts
+    scan_interval:
+       minutes: 15
+
+  - platform: scrape
+    resource: https://www.home-assistant.io
+    select: ".current-version h1"
+
+  - platform: template
+    sensors:
+      darksky_wind_speed_km_h:
+        friendly_name: "Wind Speed km/h"
+        unit_of_measurement: 'km/h'
+        value_template: "{{ (states.sensor.dark_sky_wind_speed.state | float * 18 / 5 * 100 )  | int / 100 }}"
+
+      darksky_wind_gust_km_h:
+        friendly_name: "Wind Gust km/h"
+        unit_of_measurement: 'km/h'
+        value_template: "{{ (states.sensor.dark_sky_wind_gust.state | float * 18 / 5 * 100 )  | int / 100 }}"
+
+  - platform: feedparser
+    name: Sud Ouest Bordeaux
+    feed_url: 'https://www.sudouest.fr/gironde/bordeaux/rss.xml'
+    date_format: '%a, %b %d %I:%M %p'
+    inclusions:
+      - title
+      - link
+      - description
+      - image
+      - language
+      - pubDate
+    exclusions:
+      - language
+
+binary_sensor:
+  - platform: ping
+    host: 192.168.1.66
+    name: pc_juju
+    scan_interval: 10
+  - platform: ping
+    host: 192.168.1.91
+    name: linux_server
+    scan_interval: 10
+  - platform: ping
+    host: 192.168.1.99
+    name: raspi_desktop_juju
+    scan_interval: 10
+  - platform: ping
+    host: 192.168.1.
+    name: raspi_desktop_juju
+    scan_interval: 10
+
+  - platform: octoprint
+    monitored_conditions:
+      - Printing
+      - Printing Error
+
+light:
+# Example configuration.yaml entry
+  - platform: flux_led
+    devices:
+      192.168.1.54:
+        name: ruban_led_bureau_de_juju
+        mode: "rgb"
+        
+      192.168.1.79:
+        name: ruban_led_petit_bureau_de_juju
+        mode: "rgb"
+
+octoprint:
+  - host: 192.168.1.99
+    api_key: !secret octoprint_api_key
+    name: CR-10 Mini
+    port: 5000
+    bed: true
+    number_of_tools: 1
+    sensors:
+      monitored_conditions:
+        - 'Current State'
+        - 'Temperatures'
+        - 'Job Percentage'
+        - 'Time Elapsed'
+        - 'Time Remaining'
+
+calendar:
+  - platform: todoist
+    token: !secret todoist_api_key
+
+conversation:
+  intents:
+    SayBonjour:
+      - hello
+
+intent_script:
+  SayBonjour:
+    speech:
+      text: Hello you !
