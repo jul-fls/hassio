@@ -1,0 +1,161 @@
+- id: jardin_on_time
+  alias: Allumer le jardin à l'heure prédéfinie si activé
+  description: ''
+  trigger:
+  - platform: time_pattern
+    seconds: '1'
+  condition:
+  - condition: and
+    conditions:
+    - condition: state
+      entity_id: input_select.profil_allumage_jardin
+      state: Heure
+    - condition: template
+      value_template: '{{ state_attr(''input_datetime.heure_d_allumage_du_jardin'',
+        ''hour'') == now().hour }}'
+    - condition: template
+      value_template: '{{ state_attr(''input_datetime.heure_d_allumage_du_jardin'',''minute'')
+        == now().minute }}'
+  action:
+  - data: {}
+    entity_id: switch.tasmota
+    service: switch.turn_on
+- id: jardin_off_time
+  alias: Eteindre le jardin à l'heure prédéfinie si activé
+  description: ''
+  trigger:
+  - platform: time_pattern
+    seconds: '1'
+  condition:
+  - condition: and
+    conditions:
+    - condition: state
+      entity_id: input_select.profil_extinction_du_jardin
+      state: Heure
+    - condition: template
+      value_template: '{{ state_attr(''input_datetime.heure_darret_du_jardin'', ''hour'')
+        == now().hour }}'
+    - condition: template
+      value_template: '{{ state_attr(''input_datetime.heure_darret_du_jardin'',''minute'')
+        == now().minute }}'
+  action:
+  - data: {}
+    entity_id: switch.tasmota
+    service: switch.turn_off
+- id: impression_3d_terminee
+  alias: Impression terminée
+  description: ''
+  trigger:
+  - entity_id: sensor.cr_10_mini_current_state
+    from: Printing
+    platform: state
+    to: Operational
+  condition: []
+  action:
+  - data:
+      message: Impression 3D terminée
+      title: Imprimante 3D
+    service: notify.mobile_app_tel_juju
+  - delay: 00:05:00
+  - data: {}
+    service: script.3d_printer_off
+- id: reveil_juju
+  alias: Réveil Juju
+  description: ''
+  trigger:
+  - platform: time_pattern
+    seconds: '1'
+  condition:
+  - condition: and
+    conditions:
+    - condition: template
+      value_template: '{{ state_attr(''input_datetime.heure_du_reveil'', ''hour'')
+        == now().hour }}'
+    - condition: template
+      value_template: '{{ state_attr(''input_datetime.heure_du_reveil'',''minute'')
+        == now().minute }}'
+    - condition: state
+      entity_id: input_boolean.reveil
+      state: 'on'
+  action:
+  - data: {}
+    service: script.reveil_juju
+  - data:
+      message: Il faut se réveiller !
+      title: Réveil
+    service: notify.mobile_app_tel_juju
+- id: start_hassio
+  alias: Start hassio
+  description: ''
+  trigger:
+  - event: start
+    platform: homeassistant
+  condition: []
+  action:
+  - data: {}
+    entity_id: script.status_led_esp32_salon_on
+    service: script.toggle
+- id: anniv_roland
+  alias: Anniv Roland
+  description: ''
+  trigger:
+  - minutes: '10'
+    platform: time_pattern
+  condition:
+  - condition: state
+    entity_id: sensor.roland
+    state: '0'
+  action:
+  - data:
+      message: Joyeux Anniversaire Roland !
+      title: Joyeux Anniversaire !
+    service: notify.mobile_app_was_lx1a
+- id: jardin_on_soleil
+  alias: Allumer le jardin quand le soleil est couché si activé
+  description: ''
+  trigger:
+  - event: sunset
+    platform: sun
+  condition:
+  - condition: state
+    entity_id: input_select.profil_allumage_jardin
+    state: Soleil
+  action:
+  - data: {}
+    entity_id: switch.tasmota
+    service: switch.turn_on
+- id: jardin_off_soleil
+  alias: Eteindre le jardin 2h après le coucher du soleil si activé
+  description: ''
+  trigger:
+  - event: sunset
+    offset: 02:00:00
+    platform: sun
+  condition:
+  - condition: state
+    entity_id: input_select.profil_extinction_du_jardin
+    state: Soleil
+  action:
+  - data: {}
+    entity_id: switch.tasmota
+    service: switch.turn_off
+- id: mode_jour_auto
+  alias: Mode jour auto
+  description: ''
+  trigger:
+  - at: 07:00:00
+    platform: time
+  condition: []
+  action:
+  - data: {}
+    service: script.mode_jour
+- id: mode_nuit_auto
+  alias: Mode nuit auto
+  description: ''
+  trigger:
+  - at: '23:00:00'
+    platform: time
+  condition: []
+  action:
+  - data: {}
+    service: script.mode_nuit

@@ -1,0 +1,272 @@
+pc_toggle:
+  alias: Pc Toggle
+  sequence:
+  - data: {}
+    service: rest_command.pc_button_off
+  - data: {}
+    service: rest_command.pc_button_toggle
+  - delay: '1'
+  - data: {}
+    service: rest_command.pc_button_toggle
+pc_button_on:
+  alias: Pc Button On
+  sequence:
+  - data: {}
+    service: rest_command.pc_button_on
+pc_button_off:
+  alias: Pc Button Off
+  sequence:
+  - data: {}
+    service: rest_command.pc_button_off
+3d_printer_toggle:
+  alias: 3d Printer Toggle
+  sequence:
+  - data: {}
+    service: rest_command.3d_printer_toggle
+3d_printer_on:
+  alias: 3d Printer On
+  sequence:
+  - data: {}
+    service: rest_command.3d_printer_on
+3d_printer_off:
+  alias: 3d Printer Off
+  sequence:
+  - data: {}
+    service: rest_command.3d_printer_off
+3d_printer_light_on:
+  alias: 3d Printer Light On
+  sequence:
+  - data: {}
+    service: rest_command.3d_printer_light_on
+3d_printer_light_off:
+  alias: 3d Printer Light Off
+  sequence:
+  - data: {}
+    service: rest_command.3d_printer_light_off
+pin_7_toggle:
+  alias: Pin 7 Toggle
+  sequence:
+  - data: {}
+    service: rest_command.pin_7_toggle
+pin_7_on:
+  alias: Pin 7 On
+  sequence:
+  - data: {}
+    service: rest_command.pin_7_on
+pin_7_off:
+  alias: Pin 7 Off
+  sequence:
+  - data: {}
+    service: rest_command.pin_7_off
+pin_21_toggle:
+  alias: Pin 21 Toggle
+  sequence:
+  - data: {}
+    service: rest_command.pin_21_toggle
+pin_21_on:
+  alias: Pin 21 On
+  sequence:
+  - data: {}
+    service: rest_command.pin_21_on
+pin_21_off:
+  alias: Pin 21 Off
+  sequence:
+  - data: {}
+    service: rest_command.pin_21_off
+reveil_juju:
+  alias: Réveil Juju
+  sequence:
+  - data:
+      brightness: 255
+      entity_id: light.ruban_led_petit_bureau_de_juju
+      rgb_color:
+      - 255
+      - 255
+      - 255
+    entity_id: light.ruban_led_petit_bureau_de_juju
+    service: light.turn_on
+  - delay: '1'
+  - data:
+      brightness: 1
+      entity_id: light.ruban_led_petit_bureau_de_juju
+      rgb_color:
+      - 255
+      - 255
+      - 255
+    entity_id: light.ruban_led_petit_bureau_de_juju
+    service: light.turn_on
+  - data: {}
+    service: script.reveil_juju_2
+reveil_juju_2:
+  alias: Réveil Juju 2
+  sequence:
+  - delay: '1'
+  - data: {}
+    service: script.reveil_juju
+stop_reveil_juju:
+  alias: Stop Réveil Juju
+  sequence:
+  - data: {}
+    entity_id: script.reveil_juju
+    service: script.turn_off
+  - data: {}
+    entity_id: script.reveil_juju_2
+    service: script.turn_off
+  - data:
+      brightness: 1
+      entity_id: light.ruban_led_petit_bureau_de_juju
+      rgb_color:
+      - 255
+      - 0
+      - 0
+    entity_id: light.ruban_led_petit_bureau_de_juju
+    service: light.turn_on
+  - data:
+      message: Julien est réveillé !
+      title: Réveil
+    service: notify.notify
+repas_servi:
+  alias: Repas servi
+  sequence:
+  - data:
+      message: Le repas est servi !
+      title: Repas
+    service: notify.mobile_app_ane_lx1
+  - data:
+      message: Le repas est servi !
+      title: Repas
+    service: notify.mobile_app_sm_a600fn
+  - data:
+      message: Le repas est servi !
+      title: Repas
+    service: notify.mobile_app_tel_juju
+  - data:
+      message: Le repas est servi !
+      target: Pc_juju
+      title: Repas
+    service: notify.html5_notifier
+send_custom_notif_juju:
+  alias: Envoyer Notification personnalisée
+  sequence:
+  - data:
+      message: '{{ states(''input_text.message_notification_tel_juju'') }}'
+      title: '{{ states(''input_text.titre_notification_tel_juju'') }}'
+    service: notify.mobile_app_tel_juju
+  - data:
+      value: ''
+    entity_id: input_text.titre_notification_tel_juju
+    service: input_text.set_value
+  - data:
+      value: ''
+    entity_id: input_text.message_notification_tel_juju
+    service: input_text.set_value
+send_custom_notif_lolo:
+  alias: Envoyer Notification personnalisée
+  sequence:
+  - data:
+      message: '{{ states(''input_text.message_notification_tel_lolo'') }}'
+      title: '{{ states(''input_text.titre_notification_tel_lolo'') }}'
+    service: notify.mobile_app_ane_lx1
+  - data:
+      value: ''
+    entity_id: input_text.titre_notification_tel_lolo
+    service: input_text.set_value
+  - data:
+      value: ''
+    entity_id: input_text.message_notification_tel_lolo
+    service: input_text.set_value
+send_custom_notif_vero:
+  alias: Envoyer Notification personnalisée
+  sequence:
+  - data:
+      message: '{{ states(''input_text.message_notification_tel_vero'') }}'
+      title: '{{ states(''input_text.titre_notification_tel_vero'') }}'
+    service: notify.mobile_app_sm_a600fn
+  - data:
+      value: ''
+    entity_id: input_text.titre_notification_tel_vero
+    service: input_text.set_value
+  - data:
+      value: ''
+    entity_id: input_text.message_notification_tel_vero
+    service: input_text.set_value
+send_custom_notif_roro:
+  alias: Envoyer Notification personnalisée
+  sequence:
+  - data:
+      message: '{{ states(''input_text.message_notification_tel_roro'') }}'
+      title: '{{ states(''input_text.titre_notification_tel_roro'') }}'
+    service: notify.mobile_app_was_lx1a
+  - data:
+      value: ''
+    entity_id: input_text.titre_notification_tel_roro
+    service: input_text.set_value
+  - data:
+      value: ''
+    entity_id: input_text.message_notification_tel_roro
+    service: input_text.set_value
+status_led_esp32_salon_on:
+  alias: Status led esp32 salon on
+  sequence:
+  - data: {}
+    entity_id: switch.status_led_esp32_salon
+    service: switch.turn_on
+test:
+  alias: test
+  sequence:
+  - data:
+      message: Script de test
+      title: Test
+    service: notify.html5_notifier_pc_juju
+  - data:
+      message: Script de test
+      title: Test
+    service: notify.mobile_app_tel_juju
+partons_loin_de_la_maison:
+  alias: Partons loin de la maison
+  sequence:
+  - data: {}
+    entity_id: automation.allumer_le_jardin_a_l_heure_predefinie_si_active
+    service: automation.turn_off
+  - data: {}
+    entity_id: automation.allumer_le_jardin_quand_le_soleil_est_couche_si_active_2
+    service: automation.turn_off
+  - data: {}
+    entity_id: automation.eteindre_le_jardin_4h_apres_le_coucher_du_soleil_si_active_2
+    service: automation.turn_off
+  - data: {}
+    entity_id: automation.eteindre_le_jardin_a_l_heure_predefinie
+    service: automation.turn_off
+  - data: {}
+    entity_id: input_boolean.automations_ecl_jardin
+    service: input_boolean.turn_off
+revenons_a_la_maison:
+  alias: Revenons a la maison
+  sequence:
+  - data: {}
+    entity_id: automation.allumer_le_jardin_a_l_heure_predefinie_si_active
+    service: automation.turn_on
+  - data: {}
+    entity_id: automation.allumer_le_jardin_quand_le_soleil_est_couche_si_active_2
+    service: automation.turn_on
+  - data: {}
+    entity_id: automation.eteindre_le_jardin_4h_apres_le_coucher_du_soleil_si_active_2
+    service: automation.turn_on
+  - data: {}
+    entity_id: automation.eteindre_le_jardin_a_l_heure_predefinie
+    service: automation.turn_on
+  - data: {}
+    entity_id: input_boolean.automations_ecl_jardin
+    service: input_boolean.turn_on
+mode_jour:
+  alias: Mode Jour
+  sequence:
+  - data:
+      name: default
+    service: frontend.set_theme
+mode_nuit:
+  alias: Mode nuit
+  sequence:
+  - data:
+      name: clear-dark
+    service: frontend.set_theme
