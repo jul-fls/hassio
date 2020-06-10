@@ -159,3 +159,4 @@
   action:
   - data: {}
     service: script.mode_nuit
+.
